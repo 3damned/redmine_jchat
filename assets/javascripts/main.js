@@ -1,3 +1,4 @@
+
 var chatVisible= true;
 var latestId = 0;
 var newMessage=0;
@@ -65,13 +66,13 @@ function expandChat()
 {
         setCookie('chatExpanded','0',21,'','','');
         chatVisible = true;
-        $("chatArea").hide();
+        $("#chatArea").hide();
 }
 function collapseChat()
 {
         setCookie('chatExpanded','1',21,'','','');
         chatVisible = false;
-        $("chatArea").show();
+        $("#chatArea").show();
         setTimeout('scrollChatNewest()',50);
 }
 function toggleChat()
@@ -99,47 +100,85 @@ function chat_init()
     }
 });
 
-	Event.observe('chatArea', 'mouseover', function(event) {
-    		newMessage=0;
-	});
+	// Event.observe('chatArea', 'mouseover', function(event) {
+ //    		newMessage=0;
+	// });
+    $('#chatArea').bind("mouseover", function(event){
+        newMessage=0;
+    });
 
 
 }
+
+// $(document).keypress(function(e) {
+//     if(e.which == 13) {
+//         alert('You pressed enter!');
+//     }
+// });
+
+$(document).on('keypress','#txtMsg',function(e){
+    if(e.which == 13) {
+        text=$(this).val();
+          if (text=="") return;
+        $(this).val("");
+        $.post( redmineRootPath+'/chat/send_chat', {msg: text} , function( data ) {
+            scrollChatNewest();
+            justSubmittedMessage=2;
+        });
+    }
+});
 function submitMsg()
 {
       text=$('txtMsg').value;
       if (text=="") return;
 	$('txtMsg').value="";
-      var myAjax = new Ajax.Request(
-      redmineRootPath+'/chat/send_chat',
-      {method: 'post', parameters: {msg: text},
-	onSuccess: function(){
-        	new Ajax.Updater('chatMessages', redmineRootPath+'/chat/receive_chat',
-        	{ method: 'post',  
-			onSuccess: function(){
-				scrollChatNewest();
-        			justSubmittedMessage=2;
-			}
-		});
-	}});
+ //      var myAjax = new Ajax.Request(
+ //      redmineRootPath+'/chat/send_chat',
+ //      {method: 'post', parameters: {msg: text},
+	// onSuccess: function(){
+ //        	new Ajax.Updater('chatMessages', redmineRootPath+'/chat/receive_chat',
+ //        	{ method: 'post',  
+	// 		onSuccess: function(){
+	// 			scrollChatNewest();
+ //        			justSubmittedMessage=2;
+	// 		}
+	// 	});
+	// }});
+
+    $.post( redmineRootPath+'/chat/send_chat', {msg: text} , function( data ) {
+        scrollChatNewest();
+        justSubmittedMessage=2;
+    });
+
 }
 var preContent='0';
 function refreshChat()
 {
         preContent='0';
 	initializer=2;
-	new Ajax.PeriodicalUpdater('chatMessages', redmineRootPath+'/chat/receive_chat',
-        {
-                method: 'post',
-                frequency: 5,
-                decay: 1,
-                onCreate: function(){$('ajax-indicator').style.visibility="hidden"; },
-                onSuccess: function(){$('ajax-indicator').style.visibility="visible";
-		//if (preContent != $('chatMessages').innerHTML && preContent!='0' && justSubmittedMessage<=0 && initializer<=0) {newMessage=1;flashMsg("New Message!");} 
-		justSubmittedMessage--;
-		initializer--;
-		preContent =  $('chatMessages').innerHTML;} 
+	// new Ajax.PeriodicalUpdater('chatMessages', redmineRootPath+'/chat/receive_chat',
+ //        {
+ //                method: 'post',
+ //                frequency: 5,
+ //                decay: 1,
+ //                onCreate: function(){$('ajax-indicator').style.visibility="hidden"; },
+ //                onSuccess: function(){
+ //                    $('ajax-indicator').style.visibility="visible";
+	// 	//if (preContent != $('chatMessages').innerHTML && preContent!='0' && justSubmittedMessage<=0 && initializer<=0) {newMessage=1;flashMsg("New Message!");} 
+	// 	justSubmittedMessage--;
+	// 	initializer--;
+	// 	preContent =  $('chatMessages').innerHTML;} 
+ //        });
+
+
+    window.setInterval(function() {
+        $("#chatMessages").load(redmineRootPath+'/chat/receive_chat', function(data) {
+            // Handle data manually. God knows what your update.js file is doing
+            $(this).html(data)
         });
+    }, 3000);
+
+
 }
 
 // When a new message comes in we want the chat area to flash "New message" as well as the window title bar.
@@ -153,11 +192,11 @@ var timeout;
 window.flashMsg = function (newMsg) {
     function step() {
         document.title = (document.title == original) ? newMsg : original;
-	$('chatFooter').innerHTML = ($('chatFooter').innerHTML == "Chat") ? newMsg : "Chat";
+	$('#chatFooter').innerHTML = ($('#chatFooter').innerHTML == "Chat") ? newMsg : "Chat";
         if (newMessage==1) {
             timeout = setTimeout(step, 1000);
         }else{
-		$('chatFooter').innerHTML = "Chat";
+		$('#chatFooter').innerHTML = "Chat";
 		document.title = original;
 	};
     };

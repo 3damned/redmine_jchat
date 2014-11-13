@@ -27,7 +27,7 @@
         bottom:25px;
         right:0;
         height:440px;
-        width:600px;
+        width:400px;
         background-color: #EFEEF2;//#DEDDDE;
         padding:2px;
         z-index: 99;
@@ -36,7 +36,7 @@
 {
         overflow:auto;
         height:400px;
-        width:590px;
+        width:390px;
         border:thin solid #999999;
         text-align:left;
         padding:5px;
@@ -91,7 +91,7 @@ cursor: pointer;
 {
         clear: left;
         height: 22px;
-        width: 450px;
+        width: 350px;
         padding-top: 2px;
         padding-bottom: 2px;
         border-bottom: #EEE thin solid;
