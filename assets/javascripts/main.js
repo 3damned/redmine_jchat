@@ -132,20 +132,15 @@ function submitMsg()
       text=$('txtMsg').value;
       if (text=="") return;
 	$('txtMsg').value="";
- //      var myAjax = new Ajax.Request(
- //      redmineRootPath+'/chat/send_chat',
- //      {method: 'post', parameters: {msg: text},
-	// onSuccess: function(){
- //        	new Ajax.Updater('chatMessages', redmineRootPath+'/chat/receive_chat',
- //        	{ method: 'post',  
-	// 		onSuccess: function(){
-	// 			scrollChatNewest();
- //        			justSubmittedMessage=2;
-	// 		}
-	// 	});
-	// }});
+ 
+    $.ajax({
+        type: "POST",
+        data: {msg: text},
+        global: false,
+        url: redmineRootPath+'/chat/send_chat',
 
-    $.post( redmineRootPath+'/chat/send_chat', {msg: text} , function( data ) {
+    })
+    .done(function( msg ) {
         scrollChatNewest();
         justSubmittedMessage=2;
     });
@@ -154,28 +149,24 @@ function submitMsg()
 var preContent='0';
 function refreshChat()
 {
-        preContent='0';
+    preContent='0';
 	initializer=2;
-	// new Ajax.PeriodicalUpdater('chatMessages', redmineRootPath+'/chat/receive_chat',
- //        {
- //                method: 'post',
- //                frequency: 5,
- //                decay: 1,
- //                onCreate: function(){$('ajax-indicator').style.visibility="hidden"; },
- //                onSuccess: function(){
- //                    $('ajax-indicator').style.visibility="visible";
-	// 	//if (preContent != $('chatMessages').innerHTML && preContent!='0' && justSubmittedMessage<=0 && initializer<=0) {newMessage=1;flashMsg("New Message!");} 
-	// 	justSubmittedMessage--;
-	// 	initializer--;
-	// 	preContent =  $('chatMessages').innerHTML;} 
- //        });
-
-
     window.setInterval(function() {
-        $("#chatMessages").load(redmineRootPath+'/chat/receive_chat', function(data) {
-            // Handle data manually. God knows what your update.js file is doing
-            $(this).html(data)
+        
+        $.ajax({
+            type: "GET",
+            global: false,
+            url: redmineRootPath+'/chat/receive_chat',
+        })
+            .done(function( msg ) {
+            var chatBlock = $('#chatMessages');
+            chatBlock.html(msg);
+            var top = chatBlock.scrollTop();
+            var height = chatBlock.height();
+            chatBlock.animate({scrollTop: height+76}, 100);
+            
         });
+
     }, 3000);
 
 
