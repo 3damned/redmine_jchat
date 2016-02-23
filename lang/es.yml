@@ -9,7 +9,7 @@ es:
   
   # These captions are displayed in the name panel for each chat message. label_chat_self is only used if the option the first label describes  is checked. 
   label_chat_self: 'Usted'
-  label_chat_says: 'dijó'
+  label_chat_says: 'dijo'
 
   # Header displayed on the transcript page when a date is clicked in the chat frame.
   label_transcript_header: 'Transcripciones'
